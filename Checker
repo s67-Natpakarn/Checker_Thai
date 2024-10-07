@@ -71,6 +71,15 @@ boolean isValidMove(int row, int col) {
     return true;
   }
 
+  // Capture move
+  if (abs(moveableRow) == 2 && abs(moveableCol) == 2) {
+    int midRow = (selectedRow + row) / 2;
+    int midCol = (selectedCol + col) / 2;
+    if (checkerStatus[midRow][midCol] != 0 && checkerStatus[midRow][midCol] != checkerStatus[selectedRow][selectedCol]) {
+      return true;
+    }
+  }
+
   return false; // Invalid move
 }
 
@@ -88,6 +97,13 @@ void mousePressed() {
       if (isValidMove(row, col)) {
         checkerStatus[row][col] = checkerStatus[selectedRow][selectedCol];
         checkerStatus[selectedRow][selectedCol] = 0;
+
+        // Handle capturing opponent's piece
+        if (abs(row - selectedRow) == 2) {
+          int midRow = (selectedRow + row) / 2;
+          int midCol = (selectedCol + col) / 2;
+          checkerStatus[midRow][midCol] = 0; // Remove the captured piece
+        }
       }
       selectedRow = -1;
       selectedCol = -1;
