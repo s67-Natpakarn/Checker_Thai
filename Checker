@@ -13,6 +13,9 @@ int[][] checkerStatus = {
   {2, 0, 2, 0, 2, 0, 2, 0}
 };
 
+int selectedRow = -1;
+int selectedCol = -1;
+
 void setup() {
   size(810, 810);
   noLoop();
@@ -31,7 +34,7 @@ void draw() {
 
       // Draw the square with a border
       rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
-      
+
       // Draw the border around each square
       noFill();
       stroke(0);
@@ -42,11 +45,53 @@ void draw() {
       if (checkerStatus[row][col] == 1) {
         fill(0);
         ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
-      }// Draw the black checker pieces
+      } 
+      // Draw the white checker pieces
       else if (checkerStatus[row][col] == 2) {
         fill(255);
         ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
       }
+      
+      // Highlight valid moves
+      if (isValidMove(row, col)) {
+        fill(0, 255, 0);
+        rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
+      }
     }
   }
+}
+
+boolean isValidMove(int row, int col) {
+  if (selectedRow == -1 || selectedCol == -1) return false;
+  
+  int moveableRow = row - selectedRow;
+  int moveableCol = col - selectedCol;
+
+  if (abs(moveableRow) == 1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
+    return true;
+  }
+
+  return false; // Invalid move
+}
+
+void mousePressed() {
+  int col = (mouseX - borderWidth) / squareSize;
+  int row = (mouseY - borderWidth) / squareSize;
+
+  if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
+    if (selectedRow == -1 && selectedCol == -1) {
+      if (checkerStatus[row][col] != 0) {
+        selectedRow = row;
+        selectedCol = col;
+      }
+    } else {
+      if (isValidMove(row, col)) {
+        checkerStatus[row][col] = checkerStatus[selectedRow][selectedCol];
+        checkerStatus[selectedRow][selectedCol] = 0;
+      }
+      selectedRow = -1;
+      selectedCol = -1;
+    }
+  }
+  redraw();
 }
