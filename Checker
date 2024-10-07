@@ -1,7 +1,17 @@
 int gridSize = 8;
 int squareSize = 100;
 int borderWidth = 5;
-float gridWitdh = 3.5;
+float gridWidth = 3.5;
+int[][] checkerStatus = {
+  {0, 1, 0, 1, 0, 1, 0, 1},
+  {1, 0, 1, 0, 1, 0, 1, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 2, 0, 2, 0, 2, 0, 2},
+  {2, 0, 2, 0, 2, 0, 2, 0}
+};
 
 void setup() {
   size(810, 810);
@@ -18,15 +28,25 @@ void draw() {
       } else {
         fill(100);
       }
-      
+
       // Draw the square with a border
       rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
       
       // Draw the border around each square
       noFill();
       stroke(0);
-      strokeWeight(gridWitdh);
+      strokeWeight(gridWidth);
       rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
+
+      // Draw the black checker pieces
+      if (checkerStatus[row][col] == 1) {
+        fill(0);
+        ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
+      }// Draw the black checker pieces
+      else if (checkerStatus[row][col] == 2) {
+        fill(255);
+        ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
+      }
     }
   }
 }
