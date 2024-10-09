@@ -119,3 +119,48 @@ void mousePressed() {
   }
   redraw();
 }
+
+void saveGame() {
+  String[] saveData = new String[gridSize + 1];
+  for (int row = 0; row < gridSize; row++) {
+    saveData[row] = join(intArrayToStringArray(checkerStatus[row]), ",");
+  }
+  saveData[gridSize] = str(currentPlayer); // Save the current player
+  saveStrings("checkers_save.txt", saveData);
+  println("Game saved.");
+}
+
+
+void loadGame() {
+  String[] loadedData = loadStrings("checkers_save.txt");
+  if (loadedData != null) {
+    for (int row = 0; row < gridSize; row++) {
+      String[] rowData = split(loadedData[row], ",");
+      for (int col = 0; col < gridSize; col++) {
+        checkerStatus[row][col] = int(rowData[col]);
+      }
+    }
+    currentPlayer = int(loadedData[gridSize]);
+    println("Game loaded.");
+  } else {
+    println("No saved game found.");
+  }
+}
+
+// Convert int array to String array for saving
+String[] intArrayToStringArray(int[] arr) {
+  String[] result = new String[arr.length];
+  for (int i = 0; i < arr.length; i++) {
+    result[i] = str(arr[i]);
+  }
+  return result;
+}
+
+void keyPressed() {
+  if (key == 's') {
+    saveGame();
+  } else if (key == 'l') {
+    loadGame();
+    redraw();
+  }
+}
