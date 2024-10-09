@@ -15,6 +15,7 @@ int[][] checkerStatus = {
 
 int selectedRow = -1;
 int selectedCol = -1;
+int currentPlayer = 1; // 1 for black, 2 for white
 
 void setup() {
   size(810, 810);
@@ -93,7 +94,7 @@ void mousePressed() {
 
   if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
     if (selectedRow == -1 && selectedCol == -1) {
-      if (checkerStatus[row][col] != 0) {
+      if (checkerStatus[row][col] == currentPlayer) { // Only allow current player to select their pieces
         selectedRow = row;
         selectedCol = col;
       }
@@ -108,6 +109,9 @@ void mousePressed() {
           int midCol = (selectedCol + col) / 2;
           checkerStatus[midRow][midCol] = 0; // Remove the captured piece
         }
+
+        // Switch turns after a successful move
+        currentPlayer = (currentPlayer == 1) ? 2 : 1;
       }
       selectedRow = -1;
       selectedCol = -1;
