@@ -67,15 +67,19 @@ boolean isValidMove(int row, int col) {
   int moveableRow = row - selectedRow;
   int moveableCol = col - selectedCol;
 
+  // Simple move (one step diagonally)
   if (abs(moveableRow) == 1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
     return true;
   }
 
-  // Capture move
+  // Capture move (two steps diagonally)
   if (abs(moveableRow) == 2 && abs(moveableCol) == 2) {
     int midRow = (selectedRow + row) / 2;
     int midCol = (selectedCol + col) / 2;
-    if (checkerStatus[midRow][midCol] != 0 && checkerStatus[midRow][midCol] != checkerStatus[selectedRow][selectedCol]) {
+    
+    // Ensure that there is an opponent's piece to capture and no piece blocking the way
+    if (checkerStatus[midRow][midCol] != 0 && checkerStatus[midRow][midCol] != checkerStatus[selectedRow][selectedCol] &&
+        checkerStatus[row][col] == 0) {
       return true;
     }
   }
