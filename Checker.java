@@ -15,7 +15,9 @@ int[][] checkerStatus = {
 
 int selectedRow = -1;
 int selectedCol = -1;
-int currentPlayer = 1; // 1 for black, 2 for white
+int currentPlayer = 2; // 1 for black, 2 for white
+boolean gameOver = false;
+int winner = 0; // 1 for black, 2 for white, 0 for none
 
 void setup() {
   size(810, 810);
@@ -32,23 +34,17 @@ void draw() {
       } else {
         fill(100);
       }
-
-      // Draw the square with a border
       rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
-
-      // Draw the border around each square
       noFill();
       stroke(0);
       strokeWeight(gridWidth);
       rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
-
-      // Draw the black checker pieces
+      
+      // Draw checkers
       if (checkerStatus[row][col] == 1) {
         fill(0);
         ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
-      } 
-      // Draw the white checker pieces
-      else if (checkerStatus[row][col] == 2) {
+      } else if (checkerStatus[row][col] == 2) {
         fill(255);
         ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
       }
@@ -59,6 +55,27 @@ void draw() {
         rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
       }
     }
+  }
+  
+  // Check for game over
+  checkGameOver();
+  
+  if (gameOver) {
+    textSize(50);
+    textAlign(CENTER);
+    if (winner == 1) {
+      background(0);
+      fill(255);
+      text("Game Over : )", width / 2, height / 2 - 40);
+      text("Winner : Black ", width / 2, height / 2 + 20);
+    } else if (winner == 2) {
+      background(0);
+      fill(255);
+      text("Game Over : )", width / 2, height / 2 - 40);
+      text("Winner : White ", width / 2, height / 2 + 20);
+    }
+    textSize(20);
+    text("Press R to Restart", width / 2, height / 2 + 60);
   }
 }
 
@@ -78,7 +95,6 @@ boolean isValidMove(int row, int col) {
     int midRow = (selectedRow + row) / 2;
     int midCol = (selectedCol + col) / 2;
     
-    // Ensure that there is an opponent's piece to capture and no piece blocking the way
     if (checkerStatus[midRow][midCol] != 0 && checkerStatus[midRow][midCol] != checkerStatus[selectedRow][selectedCol] &&
         checkerStatus[row][col] == 0) {
       return true;
@@ -89,12 +105,14 @@ boolean isValidMove(int row, int col) {
 }
 
 void mousePressed() {
+  if (gameOver) return; // Ignore clicks if the game is over
+
   int col = (mouseX - borderWidth) / squareSize;
   int row = (mouseY - borderWidth) / squareSize;
 
   if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
     if (selectedRow == -1 && selectedCol == -1) {
-      if (checkerStatus[row][col] == currentPlayer) { // Only allow current player to select their pieces
+      if (checkerStatus[row][col] == currentPlayer) {
         selectedRow = row;
         selectedCol = col;
       }
@@ -103,23 +121,72 @@ void mousePressed() {
         checkerStatus[row][col] = checkerStatus[selectedRow][selectedCol];
         checkerStatus[selectedRow][selectedCol] = 0;
 
-        // Handle capturing opponent's piece
         if (abs(row - selectedRow) == 2) {
           int midRow = (selectedRow + row) / 2;
           int midCol = (selectedCol + col) / 2;
           checkerStatus[midRow][midCol] = 0; // Remove the captured piece
         }
 
-        // Switch turns after a successful move
         currentPlayer = (currentPlayer == 1) ? 2 : 1;
       }
       selectedRow = -1;
       selectedCol = -1;
     }
   }
+  checkGameOver(); // Check if the game is over after the move
   redraw();
 }
 
+void checkGameOver() {
+  int blackCount = 0;
+  int whiteCount = 0;
+
+  for (int row = 0; row < gridSize; row++) {
+    for (int col = 0; col < gridSize; col++) {
+      if (checkerStatus[row][col] == 1) blackCount++;
+      if (checkerStatus[row][col] == 2) whiteCount++;
+    }
+  }
+
+  // Check if any player has no pieces left
+  if (blackCount == 0) {
+    gameOver = true;
+    winner = 2; // White wins
+  } else if (whiteCount == 0) {
+    gameOver = true;
+    winner = 1; // Black wins
+  }
+}
+
+void keyPressed() {
+  if (key == 's') {
+    saveGame();
+  } else if (key == 'l') {
+    loadGame();
+    redraw();
+  } else if (key == 'r') { // Restart the game
+    restartGame();
+  }
+}
+
+void restartGame() {
+  checkerStatus = new int[][] {
+    {0, 1, 0, 1, 0, 1, 0, 1},
+    {1, 0, 1, 0, 1, 0, 1, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 2, 0, 2, 0, 2, 0, 2},
+    {2, 0, 2, 0, 2, 0, 2, 0}
+  };
+  currentPlayer = 1;
+  gameOver = false;
+  winner = 0;
+  redraw();
+}
+
+// Save game state to a file
 void saveGame() {
   String[] saveData = new String[gridSize + 1];
   for (int row = 0; row < gridSize; row++) {
@@ -129,7 +196,6 @@ void saveGame() {
   saveStrings("checkers_save.txt", saveData);
   println("Game saved.");
 }
-
 
 void loadGame() {
   String[] loadedData = loadStrings("checkers_save.txt");
@@ -154,13 +220,4 @@ String[] intArrayToStringArray(int[] arr) {
     result[i] = str(arr[i]);
   }
   return result;
-}
-
-void keyPressed() {
-  if (key == 's') {
-    saveGame();
-  } else if (key == 'l') {
-    loadGame();
-    redraw();
-  }
 }
