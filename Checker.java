@@ -62,8 +62,18 @@ void draw() {
         } else if (checkerStatus[row][col] == 2) {
           fill(255);
           ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
+        } else if (checkerStatus[row][col] == 3) {
+          fill(0);
+          ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
+          fill(255);
+          ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.3, squareSize * 0.3);
+        } else if (checkerStatus[row][col] == 4) {
+          fill(255);
+          ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
+          fill(0);
+          ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.3, squareSize * 0.3);
         }
-        
+
         // Highlight valid moves
         if (isValidMove(row, col)) {
           fill(0, 255, 0);
@@ -100,11 +110,16 @@ boolean isValidMove(int row, int col) {
   int moveableRow = row - selectedRow;
   int moveableCol = col - selectedCol;
 
-  if (currentPlayer == 1 && moveableRow == 1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
+  if (checkerStatus[selectedRow][selectedCol] == 1 && moveableRow == 1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
     return true;
   }
-  
-  if (currentPlayer == 2 && moveableRow == -1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
+
+  if (checkerStatus[selectedRow][selectedCol] == 2 && moveableRow == -1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
+    return true;
+  }
+
+  if ((checkerStatus[selectedRow][selectedCol] == 3 || checkerStatus[selectedRow][selectedCol] == 4) &&
+      abs(moveableRow) == 1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
     return true;
   }
 
@@ -112,17 +127,24 @@ boolean isValidMove(int row, int col) {
     int midRow = (selectedRow + row) / 2;
     int midCol = (selectedCol + col) / 2;
 
-    if (currentPlayer == 1 && moveableRow == 2 && checkerStatus[midRow][midCol] == 2 &&
-        checkerStatus[row][col] == 0) {
+    if ((checkerStatus[selectedRow][selectedCol] == 1 || checkerStatus[selectedRow][selectedCol] == 3) && moveableRow == 2 && checkerStatus[midRow][midCol] == 2 && checkerStatus[row][col] == 0) {
       return true;
     }
-    if (currentPlayer == 2 && moveableRow == -2 && checkerStatus[midRow][midCol] == 1 &&
-        checkerStatus[row][col] == 0) {
+    if ((checkerStatus[selectedRow][selectedCol] == 2 || checkerStatus[selectedRow][selectedCol] == 4) && moveableRow == -2 && checkerStatus[midRow][midCol] == 1 && checkerStatus[row][col] == 0) {
       return true;
     }
   }
   return false;
 }
+
+void checkForKing(int row, int col) {
+  if (checkerStatus[row][col] == 1 && row == gridSize - 1) {
+    checkerStatus[row][col] = 3; // Black piece become black king
+  } else if (checkerStatus[row][col] == 2 && row == 0) {
+    checkerStatus[row][col] = 4; // White piece become white king
+  }
+}
+
 
 void mousePressed() {
   if (gameOver) return; // Ignore clicks if the game is over
@@ -133,7 +155,7 @@ void mousePressed() {
 
   if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
     if (selectedRow == -1 && selectedCol == -1) {
-      if (checkerStatus[row][col] == currentPlayer) {
+      if (checkerStatus[row][col] == currentPlayer || checkerStatus[row][col] == currentPlayer + 2) {
         selectedRow = row;
         selectedCol = col;
       }
@@ -147,6 +169,8 @@ void mousePressed() {
           int midCol = (selectedCol + col) / 2;
           checkerStatus[midRow][midCol] = 0; // Remove the captured piece
         }
+
+        checkForKing(row, col); // Check if the piece should become a king
 
         currentPlayer = (currentPlayer == 1) ? 2 : 1;
       }
