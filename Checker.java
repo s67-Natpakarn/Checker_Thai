@@ -29,12 +29,14 @@ void draw() {
   background(0);
   
   if (notStart) {
-    textSize(50);
+    textSize(55);
     textAlign(CENTER);
     background(0);
     fill(255);
     text("Welcome to Checker by Java : )", width / 2, height / 2 - 200);
-    text("Click anywhere to start the game", width / 2, height /2 - 120);
+    textSize(40);
+    text("Click anywhere or Load game to start the game", width / 2, height /2 - 120);
+    textSize(30);
     text("Press S to save game", width / 2, height / 2 + 110);
     text("Press L to load game", width / 2, height / 2 + 170);
   }
@@ -94,27 +96,32 @@ void draw() {
   
 boolean isValidMove(int row, int col) {
   if (selectedRow == -1 || selectedCol == -1) return false;
-  
+
   int moveableRow = row - selectedRow;
   int moveableCol = col - selectedCol;
 
-  // Simple move (one step diagonally)
-  if (abs(moveableRow) == 1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
+  if (currentPlayer == 1 && moveableRow == 1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
+    return true;
+  }
+  
+  if (currentPlayer == 2 && moveableRow == -1 && abs(moveableCol) == 1 && checkerStatus[row][col] == 0) {
     return true;
   }
 
-  // Capture move (two steps diagonally)
   if (abs(moveableRow) == 2 && abs(moveableCol) == 2) {
     int midRow = (selectedRow + row) / 2;
     int midCol = (selectedCol + col) / 2;
-    
-    if (checkerStatus[midRow][midCol] != 0 && checkerStatus[midRow][midCol] != checkerStatus[selectedRow][selectedCol] &&
+
+    if (currentPlayer == 1 && moveableRow == 2 && checkerStatus[midRow][midCol] == 2 &&
+        checkerStatus[row][col] == 0) {
+      return true;
+    }
+    if (currentPlayer == 2 && moveableRow == -2 && checkerStatus[midRow][midCol] == 1 &&
         checkerStatus[row][col] == 0) {
       return true;
     }
   }
-
-  return false; // Invalid move
+  return false;
 }
 
 void mousePressed() {
@@ -177,8 +184,9 @@ void keyPressed() {
     saveGame();
   } else if (key == 'l') {
     loadGame();
+    notStart = false;
     redraw();
-  } else if (key == 'r') { // Restart the game
+  } else if (key == 'r') {
     restartGame();
   }
 }
