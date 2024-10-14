@@ -127,11 +127,13 @@ boolean isValidMove(int row, int col) {
     int midRow = (selectedRow + row) / 2;
     int midCol = (selectedCol + col) / 2;
 
-    if ((checkerStatus[selectedRow][selectedCol] == 1 || checkerStatus[selectedRow][selectedCol] == 3) && moveableRow == 2 && checkerStatus[midRow][midCol] == 2 && checkerStatus[row][col] == 0) {
-      return true;
+    if ((checkerStatus[selectedRow][selectedCol] == 1 || checkerStatus[selectedRow][selectedCol] == 3) && 
+        checkerStatus[midRow][midCol] == 2 && checkerStatus[row][col] == 0) {
+        return true;
     }
-    if ((checkerStatus[selectedRow][selectedCol] == 2 || checkerStatus[selectedRow][selectedCol] == 4) && moveableRow == -2 && checkerStatus[midRow][midCol] == 1 && checkerStatus[row][col] == 0) {
-      return true;
+    if ((checkerStatus[selectedRow][selectedCol] == 2 || checkerStatus[selectedRow][selectedCol] == 4) && 
+        checkerStatus[midRow][midCol] == 1 && checkerStatus[row][col] == 0) {
+        return true;
     }
   }
   return false;
