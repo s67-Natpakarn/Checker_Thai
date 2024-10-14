@@ -18,6 +18,7 @@ int selectedCol = -1;
 int currentPlayer = 2; // 1 for black, 2 for white
 boolean gameOver = false;
 int winner = 0; // 1 for black, 2 for white, 0 for none
+boolean notStart = true;
 
 void setup() {
   size(810, 810);
@@ -26,37 +27,49 @@ void setup() {
 
 void draw() {
   background(0);
-
-  for (int row = 0; row < gridSize; row++) {
-    for (int col = 0; col < gridSize; col++) {
-      if ((row + col) % 2 == 0) {
-        fill(255);
-      } else {
-        fill(100);
-      }
-      rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
-      noFill();
-      stroke(0);
-      strokeWeight(gridWidth);
-      rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
-      
-      // Draw checkers
-      if (checkerStatus[row][col] == 1) {
-        fill(0);
-        ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
-      } else if (checkerStatus[row][col] == 2) {
-        fill(255);
-        ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
-      }
-      
-      // Highlight valid moves
-      if (isValidMove(row, col)) {
-        fill(0, 255, 0);
+  
+  if (notStart) {
+    textSize(50);
+    textAlign(CENTER);
+    background(0);
+    fill(255);
+    text("Welcome to Checker by Java : )", width / 2, height / 2 - 200);
+    text("Click anywhere to start the game", width / 2, height /2 - 120);
+    text("Press S to save game", width / 2, height / 2 + 110);
+    text("Press L to load game", width / 2, height / 2 + 170);
+  }
+  
+  if (!notStart) {
+    for (int row = 0; row < gridSize; row++) {
+      for (int col = 0; col < gridSize; col++) {
+        if ((row + col) % 2 == 0) {
+          fill(255);
+        } else {
+          fill(100);
+        }
         rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
+        noFill();
+        stroke(0);
+        strokeWeight(gridWidth);
+        rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
+        
+        // Draw checkers
+        if (checkerStatus[row][col] == 1) {
+          fill(0);
+          ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
+        } else if (checkerStatus[row][col] == 2) {
+          fill(255);
+          ellipse(col * squareSize + borderWidth + squareSize / 2, row * squareSize + borderWidth + squareSize / 2, squareSize * 0.6, squareSize * 0.6);
+        }
+        
+        // Highlight valid moves
+        if (isValidMove(row, col)) {
+          fill(0, 255, 0);
+          rect(col * squareSize + borderWidth, row * squareSize + borderWidth, squareSize, squareSize);
+        }
       }
     }
   }
-  
   // Check for game over
   checkGameOver();
   
@@ -78,7 +91,7 @@ void draw() {
     text("Press R to Restart", width / 2, height / 2 + 60);
   }
 }
-
+  
 boolean isValidMove(int row, int col) {
   if (selectedRow == -1 || selectedCol == -1) return false;
   
@@ -106,6 +119,7 @@ boolean isValidMove(int row, int col) {
 
 void mousePressed() {
   if (gameOver) return; // Ignore clicks if the game is over
+  notStart = false;
 
   int col = (mouseX - borderWidth) / squareSize;
   int row = (mouseY - borderWidth) / squareSize;
@@ -180,7 +194,7 @@ void restartGame() {
     {0, 2, 0, 2, 0, 2, 0, 2},
     {2, 0, 2, 0, 2, 0, 2, 0}
   };
-  currentPlayer = 1;
+  currentPlayer = 2;
   gameOver = false;
   winner = 0;
   redraw();
