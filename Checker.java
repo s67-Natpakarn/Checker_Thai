@@ -94,8 +94,8 @@ void draw() {
       text("Game Over : )", width / 2, height / 2 - 40);
       text("Winner : Black ", width / 2, height / 2 + 20);
     } else if (winner == 2) {
-      background(0);
-      fill(255);
+      background(255);
+      fill(0);
       text("Game Over : )", width / 2, height / 2 - 40);
       text("Winner : White ", width / 2, height / 2 + 20);
     }
@@ -124,16 +124,18 @@ boolean isValidMove(int row, int col) {
   }
 
   if (abs(moveableRow) == 2 && abs(moveableCol) == 2) {
-    int midRow = (selectedRow + row) / 2;
-    int midCol = (selectedCol + col) / 2;
+  int midRow = (selectedRow + row) / 2;
+  int midCol = (selectedCol + col) / 2;
 
-    if ((checkerStatus[selectedRow][selectedCol] == 1 || checkerStatus[selectedRow][selectedCol] == 3) && 
-        checkerStatus[midRow][midCol] == 2 && checkerStatus[row][col] == 0) {
-        return true;
-    }
-    if ((checkerStatus[selectedRow][selectedCol] == 2 || checkerStatus[selectedRow][selectedCol] == 4) && 
-        checkerStatus[midRow][midCol] == 1 && checkerStatus[row][col] == 0) {
-        return true;
+    if ((checkerStatus[selectedRow][selectedCol] == 1 || checkerStatus[selectedRow][selectedCol] == 3) &&
+        (checkerStatus[midRow][midCol] == 2 || checkerStatus[midRow][midCol] == 4) && 
+        checkerStatus[row][col] == 0) {
+      return true;
+    }  
+    if ((checkerStatus[selectedRow][selectedCol] == 2 || checkerStatus[selectedRow][selectedCol] == 4) &&
+        (checkerStatus[midRow][midCol] == 1 || checkerStatus[midRow][midCol] == 3) && 
+        checkerStatus[row][col] == 0) {
+      return true;
     }
   }
   return false;
@@ -206,13 +208,13 @@ void checkGameOver() {
 }
 
 void keyPressed() {
-  if (key == 's') {
+  if (key == 's' || key == 'ห') {
     saveGame();
-  } else if (key == 'l') {
+  } else if (key == 'l' || key == 'ส') {
     loadGame();
     notStart = false;
     redraw();
-  } else if (key == 'r') {
+  } else if (key == 'r' || key == 'พ') {
     restartGame();
   }
 }
