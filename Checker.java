@@ -124,18 +124,25 @@ boolean isValidMove(int row, int col) {
   }
 
   if (abs(moveableRow) == 2 && abs(moveableCol) == 2) {
-  int midRow = (selectedRow + row) / 2;
-  int midCol = (selectedCol + col) / 2;
+    int midRow = (selectedRow + row) / 2;
+    int midCol = (selectedCol + col) / 2;
 
-    if ((checkerStatus[selectedRow][selectedCol] == 1 || checkerStatus[selectedRow][selectedCol] == 3) &&
-        (checkerStatus[midRow][midCol] == 2 || checkerStatus[midRow][midCol] == 4) && 
-        checkerStatus[row][col] == 0) {
+    if (checkerStatus[selectedRow][selectedCol] == 1 && moveableRow == 2 &&
+        (checkerStatus[midRow][midCol] == 2 || checkerStatus[midRow][midCol] == 4) && checkerStatus[row][col] == 0) {
       return true;
-    }  
-    if ((checkerStatus[selectedRow][selectedCol] == 2 || checkerStatus[selectedRow][selectedCol] == 4) &&
-        (checkerStatus[midRow][midCol] == 1 || checkerStatus[midRow][midCol] == 3) && 
-        checkerStatus[row][col] == 0) {
+    }
+    if (checkerStatus[selectedRow][selectedCol] == 2 && moveableRow == -2 &&
+        (checkerStatus[midRow][midCol] == 1 || checkerStatus[midRow][midCol] == 3) && checkerStatus[row][col] == 0) {
       return true;
+    }
+
+    if ((checkerStatus[selectedRow][selectedCol] == 3 || checkerStatus[selectedRow][selectedCol] == 4) &&
+        (checkerStatus[midRow][midCol] != 0) && checkerStatus[row][col] == 0) {
+      if (checkerStatus[selectedRow][selectedCol] == 3 && (checkerStatus[midRow][midCol] == 2 || checkerStatus[midRow][midCol] == 4)) {
+        return true;
+      } else if (checkerStatus[selectedRow][selectedCol] == 4 && (checkerStatus[midRow][midCol] == 1 || checkerStatus[midRow][midCol] == 3)) {
+        return true;
+      }
     }
   }
   return false;
